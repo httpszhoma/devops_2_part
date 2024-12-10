@@ -30,6 +30,7 @@ deploy:
     - main  # Деплой только для main ветки
 
 # Стадия для тестирования API через HTTP-запрос
+
 api_test:
   stage: api_test
   image: curlimages/curl:latest # Используем образ с curl для выполнения запросов
