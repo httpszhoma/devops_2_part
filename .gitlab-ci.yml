@@ -1,12 +1,12 @@
 stages:
   - build
   - deploy
-  - api_test  # Стадия для тестирования API
+  - api_test
 
 # Стадия сборки
 build:
   stage: build
-  image: maven:3.8.6-openjdk-17
+  image: maven:3.8.6-jdk-17   # Образ с Maven и OpenJDK 17
   script:
     - echo "Building backend..."
     - mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
@@ -24,19 +24,14 @@ deploy:
   script:
     - echo "Deploying application..."
     - docker-compose -f docker-compose.yml up -d # Разворачиваем приложение с помощью Docker Compose
-    - echo "Waiting for backend to be ready..."
-    - sleep 20 # Ожидаем 20 секунд, чтобы приложение успело запуститься
   only:
     - main  # Деплой только для main ветки
 
 # Стадия для тестирования API через HTTP-запрос
-
 api_test:
   stage: api_test
   image: curlimages/curl:latest # Используем образ с curl для выполнения запросов
   script:
-    - echo "Waiting for backend to be available..."
-    - sleep 10 # Подождем еще немного перед выполнением теста, если нужно
     - |
       # Тестирование POST запроса с использованием curl
       response=$(curl -X POST "http://localhost:8080/users" \
