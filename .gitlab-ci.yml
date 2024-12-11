@@ -9,14 +9,14 @@ build:
   image: maven:latest   # Образ с Maven и OpenJDK
   script:
     - echo "Building backend..."
-    - cd backend/fullstack-backend_master && mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
+    - cd backend && mvn clean install -DskipTests # Сборка Spring Boot приложения
     - cd .. # Возвращаемся в корневую директорию
     - echo "Building frontend..."
-    - cd ../frontend/simple_fullstack_project_frontend && npm install && npm run build # Сборка фронтенда
+    - cd frontend/simple_fullstack_project_frontend && npm install && npm run build # Сборка фронтенда
   artifacts:
     paths:
       - backend/target/demo-0.0.1-SNAPSHOT.jar
-      - frontend/build
+      - frontend/simple_fullstack_project_frontend/build
     expire_in: 1 hour
 
 # Стадия деплоя
@@ -27,24 +27,22 @@ deploy:
     - docker:dind # Для работы с Docker внутри CI/CD
   script:
     - echo "Deploying application..."
-    - docker-compose -f docker-compose.yml up -d --build # Разворачиваем приложение с помощью Docker Compose
+    - docker-compose up -d --build # Запуск Docker Compose
   only:
-    - main  # Деплой только для main ветки
+    - main # Выполняется только в ветке main
 
-# Стадия для тестирования API через HTTP-запрос
+# Стадия тестирования API
 api_test:
   stage: api_test
-  image: curlimages/curl:latest # Используем образ с curl для выполнения запросов
+  image: curlimages/curl:latest
   script:
-    - echo "Waiting for the backend to be ready..."
-    - sleep 15 # Ждем, пока приложение запустится (можно заменить на health-check)
+    - echo "Waiting for backend to be ready..."
+    - sleep 15 # Ждем запуска приложения (рекомендуется использовать health-check)
     - |
-      # Тестирование POST запроса с использованием curl
       response=$(curl -X POST "http://localhost:8080/users" \
         -H "Content-Type: application/json" \
         -d '{"username": "newUser", "name": "New User", "email": "newuser@example.com"}')
       echo "Response: $response"
-      # Проверяем, что в ответе есть нужные значения
       if [[ "$response" != *"newUser"* ]]; then
         echo "Test failed: User was not created."
         exit 1
