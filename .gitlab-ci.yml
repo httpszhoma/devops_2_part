@@ -9,13 +9,13 @@ build:
   image: maven:latest   # Образ с Maven и OpenJDK
   script:
     - echo "Building backend..."
-    - cd backend && mvn clean install -DskipTests # Сборка Spring Boot приложения
-    - cd .. # Возвращаемся в корневую директорию
+    - cd backend/fullstack-backend_master && mvn clean install -DskipTests # Сборка Spring Boot приложения
+    - cd ../../ # Возвращаемся в корневую директорию
     - echo "Building frontend..."
     - cd frontend/simple_fullstack_project_frontend && npm install && npm run build # Сборка фронтенда
   artifacts:
     paths:
-      - backend/target/demo-0.0.1-SNAPSHOT.jar
+      - backend/fullstack-backend_master/target/demo-0.0.1-SNAPSHOT.jar
       - frontend/simple_fullstack_project_frontend/build
     expire_in: 1 hour
 
