@@ -9,7 +9,7 @@ build:
   image: maven:latest   # Образ с Maven и OpenJDK
   script:
     - echo "Building backend..."
-    - cd backend && mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
+    - cd backend/fullstack-backend_master && mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
     - cd .. # Возвращаемся в корневую директорию
     - echo "Building frontend..."
     - cd frontend && npm install && npm run build # Сборка фронтенда
