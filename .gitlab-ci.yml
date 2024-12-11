@@ -12,7 +12,7 @@ build:
     - cd backend/fullstack-backend_master && mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
     - cd .. # Возвращаемся в корневую директорию
     - echo "Building frontend..."
-    - cd frontend/simple_fullstack_project_frontend && npm install && npm run build # Сборка фронтенда
+    - cd ../frontend/simple_fullstack_project_frontend && npm install && npm run build # Сборка фронтенда
   artifacts:
     paths:
       - backend/target/demo-0.0.1-SNAPSHOT.jar
