@@ -6,7 +6,7 @@ stages:
 # Стадия сборки
 build:
   stage: build
-  image: maven:3.8.6-jdk-17   # Образ с Maven и OpenJDK 17
+  image: maven:latest   # Образ с Maven и OpenJDK 17
   script:
     - echo "Building backend..."
     - mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
