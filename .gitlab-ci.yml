@@ -6,10 +6,11 @@ stages:
 # Стадия сборки
 build:
   stage: build
-  image: maven:latest   # Образ с Maven и OpenJDK 17
+  image: maven:latest   # Образ с Maven и OpenJDK
   script:
     - echo "Building backend..."
-    - mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
+    - cd backend && mvn clean install -DskipTests # Сборка Spring Boot приложения (без тестов)
+    - cd .. # Возвращаемся в корневую директорию
     - echo "Building frontend..."
     - cd frontend && npm install && npm run build # Сборка фронтенда
   artifacts:
@@ -21,9 +22,12 @@ build:
 # Стадия деплоя
 deploy:
   stage: deploy
+  image: docker:stable
+  services:
+    - docker:dind # Для работы с Docker внутри CI/CD
   script:
     - echo "Deploying application..."
-    - docker-compose -f docker-compose.yml up -d # Разворачиваем приложение с помощью Docker Compose
+    - docker-compose -f docker-compose.yml up -d --build # Разворачиваем приложение с помощью Docker Compose
   only:
     - main  # Деплой только для main ветки
 
@@ -32,6 +36,8 @@ api_test:
   stage: api_test
   image: curlimages/curl:latest # Используем образ с curl для выполнения запросов
   script:
+    - echo "Waiting for the backend to be ready..."
+    - sleep 15 # Ждем, пока приложение запустится (можно заменить на health-check)
     - |
       # Тестирование POST запроса с использованием curl
       response=$(curl -X POST "http://localhost:8080/users" \
